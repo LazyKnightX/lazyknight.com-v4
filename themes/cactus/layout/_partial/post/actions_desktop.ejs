@@ -6,6 +6,7 @@
     <span id="nav">
       <ul>
         <% for (var i in theme.nav) { %><!--
+       --><% if (theme.nav[i].indexOf('BREAK') >= 0) { continue; } %><!--
        --><li><a href="<%- url_for(theme.nav[i]) %>"><%= __('nav.'+i).replace("nav.", "") %></a></li><!--
      --><% } %>
       </ul>
