@@ -18,7 +18,7 @@ nav:
   about: /about/
   articles: /archives/
   projects: http://github.com/LazyKnightX
-  '◆': /#
+  '_BREAK_1': 'BREAK'
   game-script-tool: /game-script-tool/
   lua-tool: /lua-tool/
   war3-sample: /war3-sample/

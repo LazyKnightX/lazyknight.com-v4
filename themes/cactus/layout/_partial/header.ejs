@@ -20,13 +20,31 @@
     </div>
   </a>
   <div id="nav">
+    <% var break_index = -1; %>
+    <% var run_index = -1; %>
     <ul>
       <li class="icon">
         <a href="#" aria-label="<%- __('icons.menu') %>"><i class="fa-solid fa-bars fa-2x"></i></a>
       </li>
-      <% for (var i in theme.nav) { %><!--
-     --><li><a href="<%- url_for(theme.nav[i]) %>"><%= __('nav.'+i).replace("nav.", "") %></a></li><!--
-   --><% } %>
+      <% for (var k in theme.nav) { %><!--
+        --><% break_index = break_index + 1; %><!--
+        --><% if (theme.nav[k].indexOf('BREAK') >= 0) { %><!--
+          --><% break; %><!--
+        --><% } else { %><!--
+          --><li><a href="<%- url_for(theme.nav[k]) %>"><%= __('nav.'+k).replace("nav.", "") %></a></li><!--
+        --><% } %><!--
+      --><% } %>
+    </ul>
+    <ul style="margin-top: 4px;">
+      <li class="icon">
+        <a href="#" aria-label="<%- __('icons.menu') %>"><i class="fa-solid fa-bars fa-2x"></i></a>
+      </li>
+      <% for (var k in theme.nav) { %><!--
+        --><% run_index = run_index + 1; %><!--
+        --><% if (run_index > break_index) { %><!--
+          --><li><a href="<%- url_for(theme.nav[k]) %>"><%= __('nav.'+k).replace("nav.", "") %></a></li><!--
+        --><% } %><!--
+      --><% } %>
     </ul>
   </div>
 </header>
