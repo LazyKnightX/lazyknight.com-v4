@@ -1,7 +1,7 @@
 [
     {
         "name":"MKWE",
-        "url":"http://localhost:4000/mkwe/",
+        "url":"/mkwe/",
         "desc":"一个更便捷的魔兽地图编辑器。"
      },
      {
