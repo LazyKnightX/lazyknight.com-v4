@@ -1,0 +1,28 @@
+---
+title: 魔兽争霸3 对象ID列表
+---
+
+<div>
+    <input type="text" id="w3-input" placeholder="请输入前缀... 如：I00" />
+    <p id="w3-con">I000 I001 I002 I003 I004 I005 I006 I007 I008 I009 I00A I00B I00C I00D I00E I00F I00G I00H I00I I00J I00K I00L I00M I00N I00O I00P I00Q I00R I00S I00T I00U I00V I00W I00X I00Y I00Z</p>
+</div>
+
+<script>
+    var input = document.getElementById('w3-input');
+    var con = document.getElementById('w3-con');
+    var list = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' ];
+
+    input.onkeyup = function() {
+        var val = input.value;
+        var len = val.length;
+        var str = '';
+        if (len > 3) {
+            alert('前缀不能超过3个字符');
+            return;
+        }
+        for (var i = 0; i < list.length; i++) {
+            str += val + list[i] + ' ';
+        }
+        con.innerHTML = str;
+    }
+</script>

@@ -21,10 +21,7 @@ nav:
   '_BREAK_1': 'BREAK'
   game-script-tool: /game-script-tool/
   lua-tool: /lua-tool/
-  war3-home: /war3-home/
-  war3-sample: /war3-sample/
-  war3-starter-kit: /war3-starter-kit/
-  war3-terrain: /war3-terrain/
+  war3: /war3/
 
 
 # Links to your social media accounts.
