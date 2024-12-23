@@ -6,6 +6,8 @@ title: 魔兽特效
 
 ## 常见 - 亡灵
 
+[地图.w3x](file/war3-effect/map/general-undead.w3x)
+
 操纵死尸 `Abilities\Spells\Undead\AnimateDead\AnimateDeadTarget.mdl`
 
 ![](file/war3-effect/1.png)
