@@ -8,7 +8,7 @@ tags: [war3]
 
 ![](img/miscs/6.png)
 
-演示图：[下载](file/war3-minimap-sample.w3x)
+演示图：[下载](/file/war3-minimap-sample.w3x)
 
 参考：魔兽3坐标图
 
