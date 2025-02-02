@@ -8,8 +8,13 @@ tags: [automation]
 
 也可用于实现基于Excel的游戏数值验证Demo。
 
-pip install xlwings
-xlwings addin install
+`pip install xlwings`
+
+`xlwings addin install`
+
+* [安装](https://docs.xlwings.org/en/stable/installation.html)
+* [语法预览](https://docs.xlwings.org/en/stable/syntax_overview.html)
+* [快速开始](https://docs.xlwings.org/en/stable/quickstart.html)
 
 ```python
 import xlwings as xw
