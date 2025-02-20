@@ -59,13 +59,13 @@ posts_overview:
 # Note: this does not work together with pagination, since the pagination
 # plugin will sort pages by date of creation.
 archive:
-  sort_updated: false
+  sort_updated: true
 
 # Customize the article view.
 # Options:
 #   - show_updated: show the last modification date.
 post:
-  show_updated: false
+  show_updated: true
 
 # Customize the copyright years
 # Note: if start_year/end_year not provided, will use current year.
