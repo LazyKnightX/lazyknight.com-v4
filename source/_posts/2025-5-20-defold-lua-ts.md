@@ -6,7 +6,7 @@ tags: [ts2lua]
 
 ## TypeScript2Lua
 
-TypeScript2Lua 是一个将 TypeScript 转换为 Lua 的转换器。
+[TypeScript2Lua](https://github.com/TypeScriptToLua/TypeScriptToLua) 是一个将 TypeScript 转换为 Lua 的转换器。
 
 游戏开发中，如果你能在编写代码的过程中尽早发现错误，就能尽可能多的避免将问题遗留到游戏运行中或是游戏上线后。
 
@@ -20,3 +20,7 @@ Defold 是一个开源的跨平台游戏引擎，它使用 Lua 作为其脚本�
 
 在TypeScript2Lua的支持下，现在可以使用TypeScript为其编写游戏脚本。
 
+## 参考资料
+
+* [ts2lua](https://github.com/Halliwood/ts2lua) - 看上去是某个ts2lua的另一种实现，但这个仓库已经停止维护多年。
+* [lua-objects](https://github.com/dmccuskey/lua-objects) - Lua中的一种OOP实现方案，10年前已停止维护。
