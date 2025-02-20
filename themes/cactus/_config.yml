@@ -16,6 +16,7 @@ direction: ltr
 nav:
   home: /
   about: /about/
+  roll: /roll/
   articles: /archives/
   projects: http://github.com/LazyKnightX
   '_BREAK_1': 'BREAK'

@@ -6,6 +6,10 @@ title: 魔兽争霸3
 
 * [演示图](/war3/samples)
 
+**编辑器**
+
+* [KKWE](/file/war3-kkwe.zip)
+
 **开发包**
 
 * [war3-starter-kit](https://github.com/LazyKnightX/war3-starter-kit)
