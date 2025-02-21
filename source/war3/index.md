@@ -12,7 +12,13 @@ title: 魔兽争霸3
 
 **开发包**
 
+公开：
+
 * [war3-starter-kit](https://github.com/LazyKnightX/war3-starter-kit)
+
+私有：
+
+* [starter-kit-for-war3map-LuaT](https://gitee.com/LazyKnight/starter-kit-for-war3map-LuaT) - 内置JAPI 1.49.3 + 脚手架：封装Lua代码供T调用
 
 **地形**
 

@@ -10,3 +10,7 @@ date: 2024-12-18 19:33:08
 ## 技术
 
 * [Markdown](https://www.w3schools.io/file/markdown-introduction/)
+
+## Blog功能
+
+* [hexo-tag-hint](https://github.com/etigerstudio/hexo-tag-hint)
