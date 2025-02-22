@@ -39,3 +39,9 @@ title: 魔兽争霸3
 **开发辅助工具**
 
 * [对象ID列表 0-Z](/war3/war3-object-id-list)
+
+**源码加密**
+
+私有：
+
+* [lk-river4-core](https://gitee.com/LazyKnight/lk-river4-core) - 简易的Lua源码加密方案。
