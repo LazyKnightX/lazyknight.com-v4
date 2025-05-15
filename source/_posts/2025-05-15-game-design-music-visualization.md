@@ -6,7 +6,7 @@ tags: [game-design]
 
 ## 游戏
 
-[sirmilkman's Ꙩ](https://sirmilkman.itch.io/o) - 快节奏设计，可视化曲线
+[sirmilkman's Ꙩ](https://sirmilkman.itch.io/o) - 快节奏射击，可视化曲线
 
 ## 资源
 
