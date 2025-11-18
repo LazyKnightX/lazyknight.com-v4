@@ -1,7 +1,7 @@
 ---
 title: 在Windows下编译Lua源代码
 date: 2024-5-20 02:35:33 +0800
-update: 2024-10-19 12:09:03 +0800
+update: 2025-11-18 15:26:19 +0800
 tags: [lua]
 ---
 
@@ -27,6 +27,12 @@ https://github.com/Pharap/CompilingLua
 可能需要安装MSVC v140。
 
 ![](img/miscs/7.png)
+
+## Unicode支持
+
+https://www.lua.org/source/5.4/lctype.c.html
+
+添加 `#define LUA_UCID` 可让lua/luac支持中文变量名。
 
 ## 其它：Lua for Windows
 
