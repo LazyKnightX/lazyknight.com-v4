@@ -1,7 +1,7 @@
 ---
 title: Unity AssetBundle/Addressables 笔记 1 - 环境部署/基础原理
 date: 2026-3-2 16:11:50 +0800
-tags: [note]
+tags: [note,unity]
 typora-root-url: ..
 ---
 

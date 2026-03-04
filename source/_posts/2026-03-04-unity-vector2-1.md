@@ -1,7 +1,7 @@
 ---
 title: Unity Vector2 基础 & 朝向应用
 date: 2026-3-4 22:23:43 +0800
-tags: [note]
+tags: [note,unity]
 typora-root-url: ..
 ---
 
