@@ -26,7 +26,30 @@ typora-root-url: ..
 
 
 
-## 定义
+## 概念
+
+* Vector2.Angle
+
+* Vector2.normalized
+* Vector2.Dot
+* Vector2.magnitude / Vector2.sqrMagnitude
+* transform.up = value
+* transform.right = value
+* transform.forward = value
+* 零向量防御
+* Mathf.Approximate
+* 子弹接近目标时突然加速现象（Update执行） → overshoot / 抖动 / 反转
+* clamp
+* normalized + speed
+* Translate(value) vs .position = value
+* Vector2.Lerp
+* 预测子弹：`predicted = targetPos + targetVel * (dist/speed)`
+* Vector2.Angle vs Vector2.SignedAngle
+* Quaternion 原理
+* 取反方向 & 反方向判定
+* 大规模方向判断 & 距离筛选 → 空间分区 + Job System / Burst 。需注意四叉树动态分区对Burst不友好。
+
+
 
 ## 基础 | V2.one/zero 等的常用情景
 
@@ -142,3 +165,269 @@ transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
 * 优点：可轻松添加 `LerpAngle` 实现平滑转动；角度易读，便于限制旋转范围（如只转180°）。
 * 场景：需要“缓慢瞄准”的Boss、限制转角的枪管。
 
+## 性能
+
+可研究下方内容原理，进一步深入理解Vector2的性能。
+
+* Vector2.magnitude → 会调用 Math.Sqrt 。
+* Vector2.sqrMagnitude → 不会调用 Math.Sqrt ，因此相比 Vector2.magnitude 性能快。
+* Math.Sqrt → 理解数学运算在CPU上的代价，即可理解Vector2的性能卡点。
+* struct Vector2 → V2是值类型，即便每帧运行1000次 new Vector2 ，也不会产生GC。但注意装箱情况。
+
+## 移动 & 物理系统
+
+纯Transform驱动移动情况下一般不抖动。
+
+如果和物理系统混用（如Rigidbody2D），可能出现抖动，常见于 `Update` 方法内更新position + 卡顿时。（ `transform.position += PositionInfo` ）
+
+原理：物理系统每次FixedUpdate同步Transform。
+
+## 判定两个 Vector2 是否相同
+
+不建议直接使用 `==` or `.Equals` 。
+
+**原理：**Unity重载 `==` 和 `!=` 运算符，采用**逐分量精确比较**。
+
+但 float 浮点数多次运算时可能精度不准，易诱发幽灵BUG。
+
+```csharp
+
+[MethodImpl(MethodImplOptions.AggressiveInlining)]
+public static bool operator ==(Vector2 lhs, Vector2 rhs)
+{
+    float num = lhs.x - rhs.x;
+    float num2 = lhs.y - rhs.y;
+    return num * num + num2 * num2 < 9.9999994E-11f;
+}
+
+[MethodImpl(MethodImplOptions.AggressiveInlining)]
+public static bool operator !=(Vector2 lhs, Vector2 rhs)
+{
+    return !(lhs == rhs);
+}
+```
+
+
+
+### 推荐方式
+
+**首选：** `Vector2.Distance(a, b) < epsilon` 或 `Vector2.sqrMagnitude < epsilonSqr`
+
+
+
+例子：
+
+```csharp
+bool ApproximatelySame(Vector2 a, Vector2 b, float tolerance = 0.0001f)
+{
+    return Vector2.Distance(a, b) < tolerance;
+    // 更高效写法（避免开方）：
+    // return (a - b).sqrMagnitude < tolerance * tolerance;
+}
+```
+
+
+
+**次选：判断方向是否大致相同，忽略长度**
+
+`Vector2.Dot(a.normalized, b.normalized) > cosineThreshold`
+
+
+
+例子：
+
+```csharp
+bool DirectionsApproximatelySame(Vector2 a, Vector2 b, float minDot = 0.999f)
+{
+    // 先检查是否接近零向量，避免除零
+    if (a.sqrMagnitude < 0.0001f || b.sqrMagnitude < 0.0001f)
+        return a.sqrMagnitude < 0.0001f && b.sqrMagnitude < 0.0001f;
+
+    return Vector2.Dot(a.normalized, b.normalized) >= minDot;
+}
+```
+
+minDot 对应角度：
+
+- 0.9999 ≈ ±2.56°
+- 0.999 ≈ ±8.1°
+- 0.99 ≈ ±25.8°
+- 0.9848 ≈ ±10°
+
+
+
+**第三选择：Unity 内置工具类 Mathf.Approximately**
+
+
+
+例子：
+
+```csharp
+bool IsApproximatelyEqual(Vector2 a, Vector2 b)
+{
+    return Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
+}
+```
+
+
+
+`Mathf.Approximately` 内部实现：
+
+```csharp
+public static bool Approximately(float a, float b)
+{
+    return Abs(b - a) < Max(1E-06f * Max(Abs(a), Abs(b)), Epsilon * 8f);
+    // 相对误差 + 绝对误差结合，比较智能
+}
+```
+
+
+
+**推荐实践写法：**
+
+```csharp
+public static class Vector2Extensions
+{
+    private const float DefaultEpsilon = 0.00001f;          // 位置比较
+    private const float DirectionEpsilon = 0.001f;          // 方向比较
+    private const float DirectionDotThreshold = 0.9998f;    // ≈ ±2.56°
+
+    /// <summary> 两个向量是否“足够接近”（位置/点比较） </summary>
+    public static bool Approximately(this Vector2 a, Vector2 b, float epsilon = DefaultEpsilon)
+    {
+        return (a - b).sqrMagnitude < epsilon * epsilon;
+    }
+
+    /// <summary> 两个方向是否“基本相同”（忽略长度） </summary>
+    public static bool SameDirection(this Vector2 a, Vector2 b, float minDot = DirectionDotThreshold)
+    {
+        float magA = a.sqrMagnitude;
+        float magB = b.sqrMagnitude;
+
+        if (magA < 1e-6f || magB < 1e-6f)
+            return magA < 1e-6f && magB < 1e-6f;
+
+        return Vector2.Dot(a, b) >= minDot * Mathf.Sqrt(magA * magB);
+        // 更高效写法，避免 normalized
+    }
+}
+```
+
+
+
+### 小结
+
+**最常用、最安全**：`(a - b).sqrMagnitude < tolerance * tolerance`
+
+**方向专用**：`Vector2.Dot(a.normalized, b.normalized) > threshold`
+
+**零向量要特殊处理**：避免 normalized 时的 NaN
+
+**永远不要**：直接 `a == b` 或 `a.Equals(b)`（除非你明确知道没有浮点运算）
+
+
+
+## 角度计算
+
+`Vector2.Angle(direction, transform.up)`
+
+
+
+
+
+## 拓展
+
+### 衍生概念
+
+* Quaternion.LookRotation
+* Quaternion.Slerp
+* Rect + Rect.Contains(mousePosition)
+
+### 以安全的方式获取鼠标转世界坐标点
+
+传给 `Camera.main.ScreenToWorldPoint` 的向量参数如果出现**极值（+∞、-∞）**，会报错。
+
+在测试时，如果鼠标移动到窗口外，再获取时（`Input.mousePosition`），有可能会出现这种情况：
+
+```
+Screen position out of view frustum (screen pos inf, -inf, 0.000000) (Camera rect 0 0 1084 463)
+UnityEngine.Camera:ScreenToWorldPoint (UnityEngine.Vector3)
+LookToPlayerSmooth:Update () (at Assets/Scripts/LookToPlayerSmooth.cs:26)
+```
+
+这种情况在编辑器开发测试中尤其常见。
+
+
+
+**可以给镜头写一个拓展方法来避开这个现象。**
+
+```csharp
+public static class CameraExtensions
+{
+    public static bool TryScreenToWorldPoint(this Camera cam, Vector3 screenPos, out Vector3 worldPos, float depth = 10f)
+    {
+        worldPos = Vector3.zero;
+
+        if (float.IsNaN(screenPos.x) || float.IsInfinity(screenPos.x) ||
+            float.IsNaN(screenPos.y) || float.IsInfinity(screenPos.y))
+        {
+            return false;
+        }
+
+        if (screenPos.x < 0 || screenPos.x > Screen.width ||
+            screenPos.y < 0 || screenPos.y > Screen.height)
+        {
+            return false;
+        }
+
+        screenPos.z = depth;
+        worldPos = cam.ScreenToWorldPoint(screenPos);
+        return true;
+    }
+}
+
+// Sample:
+if (Camera.main.TryScreenToWorldPoint(Input.mousePosition, out Vector3 target, 10f))
+{
+    // 正常使用 target
+}
+else
+{
+    // 保持上一帧的方向 或 什么都不做
+}
+```
+
+
+
+**其它可能出现这种现象的情况：**
+
+* **鼠标完全移出游戏窗口（尤其是 Editor 中）** → 在 Unity Editor 里把鼠标快速移出 Game 视图，或者点到其他窗口，再快速移回来，Input.mousePosition 有概率变成垃圾值（inf/-inf/nan）。
+
+* **构建后的独立窗口 + Alt+Tab / 最小化再还原** → Windows 系统下，窗口失去焦点 → 重新获得焦点时，鼠标位置有时会短暂变成非法值。
+
+* **多显示器 + 鼠标在第二屏幕上** → 当鼠标跑到主游戏窗口之外的显示器区域，Input.mousePosition 会超出正常范围，甚至变成负无穷。
+
+* **Input.mousePosition 在 Update() 里被其他系统/插件篡改** → 比如某些 UI 框架、输入管理器、第三方插件在某些条件下会临时修改 mousePosition。
+
+* **极少数情况下：分辨率刚改变、分屏模式切换、VR/多相机等** → 相机 rect 或 screen size 还没来得及更新。
+
+## 提示
+
+* **方向向量为零：**鼠标正好在物体位置时， `direction.normalized` 是 NaN。
+
+```csharp
+// 修复方式：
+Vector2 dir = (mouseWorldPos - (Vector2)transform.position);
+if (dir.sqrMagnitude > 0.001f) {  // 用sqrMagnitude避免sqrt，可提升性能
+    transform.up = dir.normalized;
+}
+```
+
+* **多相机：**用 `Camera.main` 获取主相机比较保险，其它使用 `GetComponent<Camera>` 。
+
+* **Z轴问题**：2D物体position.z通常0，但ScreenToWorldPoint会设z=-远裁，必须强制 (Vector2) 转换。
+
+* **性能优化**：可缓存 Camera.main 到变量。
+* **系统冲突**：用 LateUpdate() 避免与动画冲突。
+* <del>**3D兼容**：可用 `transform.forward` 代替 `transform.up` 。</del>（待验）
+* 可用 `Debug.DrawRay(transform.position, transform.up * 2f, Color.red)` 可视化朝向。
